@@ -1,6 +1,8 @@
 import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import styled from "styled-components"
+import { logout } from '../redux/userSlice'
 
 const DefaultAStyle = `
     color: #333;
@@ -13,6 +15,7 @@ const DefaultAStyleHover = `
 `
 
 const Container = styled.div`
+    height: 80px;
     background-color: #fff;
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -26,24 +29,29 @@ const LogoCont = styled.div`
     }
 `
 const NavItems = styled.div`
-    >a { 
+    >* { 
         ${DefaultAStyle} 
     }
-    >a:hover {
+    >*:hover {
         ${DefaultAStyleHover}
     }
 `
 const AuthSection = styled.div`
-    a { 
+    p {
+        cursor: pointer;
+    }
+    * { 
         ${DefaultAStyle} 
     }
-    >a:hover {
+    >*:hover {
         ${DefaultAStyleHover}
     }
 `
 
 
 function NavBar() {
+    const dispatch = useDispatch()
+    const user = useSelector(s => s.user.user?.token);
     return (
         <Container>
             <LogoCont>
@@ -57,8 +65,12 @@ function NavBar() {
                 <a href="#">Contact Us</a>
             </NavItems>
             <AuthSection >
-            <Link to="/login" >Login</Link>
-                <Link to="/register" >Register</Link>
+                {user ? <p onClick={() => dispatch(logout())}>Logout</p> :
+                <>
+                    <Link to="/login" >Login</Link>
+                    <Link to="/register" >Register</Link>
+                </>
+                }
             </AuthSection>
         </Container>
     )

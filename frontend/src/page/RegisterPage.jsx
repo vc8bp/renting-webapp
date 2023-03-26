@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AxiosRequest } from "../axiosInstance"
+import NavBar from "../component/NavBar";
 
 const Wrapper = styled.div`
-  height: 100vh;
-  height: 100dvh;
+  height: calc(100vh - 80px);
+  height: calc(100dvh - 80px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -67,6 +69,7 @@ const Redirec = styled.p`
 
 
 const RegisterPage = () => {
+  const navigate= useNavigate()
   const [inputValue, setInputValue] = useState({
     name: "",
     email: "",
@@ -81,49 +84,61 @@ const RegisterPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add code to submit form data to backend
+    (async () => {
+      try {
+        const {data} = await AxiosRequest.post("/auth/register", inputValue);
+        navigate("/login")
+      } catch (error) {
+        console.log(error)
+      }
+    })()
   };
 
   return (
-    <Wrapper>
-      <Title>Register</Title>
-      <Form onSubmit={handleSubmit}>
-        <Input
-          name="name"
-          type="text"
-          placeholder="Full Name"
-          value={inputValue.name}
-          onChange={handleInputChange}
-          required
-        />
-        <Input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={inputValue.email}
-          onChange={handleInputChange}
-          required
-        />
-        <Input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={inputValue.password}
-          onChange={handleInputChange}
-          required
-        />
-        <Input
-          name="cpass"
-          type="password"
-          placeholder="Confirm Password"
-          value={inputValue.cpass}
-          onChange={handleInputChange}
-          required
-        />
-        <Button type="submit">Register</Button>
-      </Form>
-      <Redirec>Already have an Account?<Link to="/login"> Login</Link></Redirec>
-    </Wrapper>
+    <>
+      <NavBar/>
+      <Wrapper>
+        <Title>Register</Title>
+        <Form onSubmit={handleSubmit}>
+          <Input
+            name="name"
+            type="text"
+            placeholder="Full Name"
+            value={inputValue.name}
+            onChange={handleInputChange}
+            required
+            />
+          <Input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={inputValue.email}
+            onChange={handleInputChange}
+            required
+            />
+          <Input
+            autoComplete="on"
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={inputValue.password}
+            onChange={handleInputChange}
+            required
+            />
+          <Input
+            autoComplete="on"
+            name="cpass"
+            type="password"
+            placeholder="Confirm Password"
+            value={inputValue.cpass}
+            onChange={handleInputChange}
+            required
+            />
+          <Button type="submit">Register</Button>
+        </Form>
+        <Redirec>Already have an Account?<Link to="/login"> Login</Link></Redirec>
+      </Wrapper>
+    </>
   );
 };
 

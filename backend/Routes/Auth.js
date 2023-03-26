@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+const routes = require('express').Router()
 const { createJWT } = require("../helpers/token");
 const User = require("../models/User");
 
 //login route
 routes.post("/login", async (req, res) => {
-  const { email, password, forSeller } = req.body;
+  const { email, password } = req.body;
   if(!email || !password) return res.status(402).json({message: "all feild's are required"})
 
   try {
@@ -12,8 +12,8 @@ routes.post("/login", async (req, res) => {
     if(!user) return res.status(404).json({ message: "No user found with this Email ID" });
     if (user.password !== password) return res.status(400).json({ message: "your password with this email dosent Matched" })
 
-    const {_id, isSeller, isAdmin, isVerified} = user;
-    tokenPayload = { id: _id, isSeller, isAdmin, isVerified }
+    const {_id, isAdmin, isVerified} = user;
+    tokenPayload = { id: _id,  isAdmin, isVerified }
     const token = createJWT(tokenPayload)
     
     const finalUser = {...user._doc, token}

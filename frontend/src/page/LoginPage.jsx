@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import { AxiosRequest } from "../axiosInstance"
+import { useDispatch } from "react-redux";
+import { login } from "../redux/userSlice";
+import NavBar from "../component/NavBar";
 
 const Wrapper = styled.div`
-  height: 100vh;
-  height: 100dvh;
+  height: calc(100vh - 80px);
+  height: calc(100dvh - 80px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -28,6 +32,9 @@ const Form = styled.form`
   padding: 2.5rem 1rem;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  > p {
+    margin: 0.7rem 0;
+  }
 `;
 
 const Input = styled.input`
@@ -67,37 +74,60 @@ const Redirec = styled.p`
 
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useDispatch()
+  const [inputValue, setInputValue] = useState({
+    email: "",
+    password: ""
+  });
+  const [error, setError] = useState();
+  
+  const handleInputChange = (e) => {
+    const {value, name} = e.target;
+    setInputValue(p => ({...p , [name] : value}))
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add code to submit form data to backend
+    (async () => {
+      try {
+        const {data} = await AxiosRequest.post("/auth/login", inputValue);
+        dispatch(login(data))
+      } catch (error) {
+        setError(error.response.data.message)
+        console.log(error)
+      }
+    })()
   };
 
   return (
-    <Wrapper>
-      <Title>Login</Title>
-      <Form onSubmit={handleSubmit}>
-        <Input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <Input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <Button type="submit">Login</Button>
-      </Form>
-      <Redirec>Don't have an Account?<Link to="/register"> Register</Link></Redirec>
-    </Wrapper>
+    <>
+      <NavBar/>
+      <Wrapper>
+        <Title>Login</Title>
+        <Form onSubmit={handleSubmit}>
+          <Input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={inputValue.email}
+            onChange={handleInputChange}
+            required
+          />
+          <Input
+            name="password"
+            autoComplete="on"
+            type="password"
+            placeholder="Password"
+            value={inputValue.password}
+            onChange={handleInputChange}
+            required
+            />
+          {error && <p>{error}</p>}
+          <Button type="submit">Login</Button>
+        </Form>
+        <Redirec>Don't have an Account?<Link to="/register"> Register</Link></Redirec>
+      </Wrapper>
+    </>
   );
 };
 

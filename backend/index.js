@@ -13,6 +13,7 @@ app.get("/", (req, res) => {
     res.status(200).json("hello world")
 })
 
+app.use("/api/auth", require('./Routes/Auth.js'))
 
 app.listen(port, () => {
     console.log(`server is running on port ${port}`)
