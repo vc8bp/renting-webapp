@@ -14,6 +14,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/api/auth", require('./Routes/Auth.js'))
+app.use("/api/product", require('./Routes/product.js'))
 
 app.listen(port, () => {
     console.log(`server is running on port ${port}`)
